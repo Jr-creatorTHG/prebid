@@ -1,0 +1,57 @@
+<script src="https://cdn.jsdelivr.net/npm/prebid@4.0.0/dist/prebid.min.js"></script>
+
+<script>
+  // Define your ad units
+  var adUnits = [
+    {
+      code: 'div-gpt-ad-123456789-0',
+      sizes: [[300, 250], [728, 90]],
+      bids: [
+        {
+          bidder: 'appnexus',
+          params: {
+            placementId: '1234567'
+          }
+        },
+        {
+          bidder: 'rubicon',
+          params: {
+            accountId: '1234',
+            siteId: '5678',
+            zoneId: '91011'
+          }
+        }
+      ]
+    }
+  ];
+
+  // Configure your bidders
+  var pbjs = window.pbjs || {};
+  pbjs.que = pbjs.que || [];
+  pbjs.bidderSettings = {
+    appnexus: {
+      bidCpmAdjustment: function(bidCpm) {
+        return bidCpm * 0.9;
+      }
+    }
+  };
+
+  // Initialize prebid.js
+  pbjs.que.push(function() {
+    pbjs.addAdUnits(adUnits);
+    pbjs.requestBids({
+      bidsBackHandler: function() {
+        pbjs.setTargetingForGPTAsync();
+        googletag.pubads().refresh();
+      }
+    });
+  });
+
+  // Add bid responses to your ad units
+  googletag.cmd.push(function() {
+    pbjs.que.push(function() {
+      pbjs.setTargetingForGPTAsync();
+      googletag.pubads().refresh();
+    });
+  });
+</script>
